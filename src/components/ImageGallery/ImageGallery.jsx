@@ -1,8 +1,9 @@
 import React from 'react'
+import '../../styles.css'
 
 export default function ImageGallery({ children }) {
     return (
-        <ul class="gallery">
+        <ul className="ImageGallery">
             {children}
         </ul>
     )

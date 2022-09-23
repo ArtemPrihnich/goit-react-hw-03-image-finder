@@ -5,142 +5,87 @@ import Searchbar from 'components/Searchbar/Searchbar'
 import ImageGallery from 'components/ImageGallery/ImageGallery'
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem'
 import Button from 'components/Button/Button'
+import Loader from 'components/Loader/Loader'
+import Modal from 'components/Modal/Modal'
+import '../../styles.css'
 
 export default class App extends Component {
   state = {
     page: 1,
     input: '',
     responce: null,
-    error: null,
-    storage: []
-  }
-
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (prevState.input !== this.state.input || prevState.page !== this.state.page) {
-  //     console.log(prevState.page)
-  //     console.log(this.state.page)
-  //     ImageApi.fetchImages(this.state.input, this.state.page)
-  //       // .then(responce => this.setState({ responce: responce.data.hits })) ///
-  //       // .then(responce => this.setState({ responce: responce.data.hits }))
-  //       .then(responce => this.setState((prevState) => {
-
-  //         if (prevState.page === this.state.page) {
-  //           // console.log(prevState.page)
-  //           // console.log(this.state.page)
-  //           return {
-  //             responce: responce.data.hits,
-  //             storage: [...responce.data.hits]
-  //           }
-  //         }
-
-  //         if (prevState.page !== this.state.page) {
-  //           const test = responce.data.hits.map(item => item) ///
-  //           // console.log(prevState.page)
-  //           // console.log(this.state.page)
-
-  //           return {
-  //             responce: responce.data.hits,
-  //             storage: [...prevState.storage, ...test]
-  //           }
-  //         }
-  //       }))
-  //       // .then(responce => {
-  //       //   if (prevState.page !== this.state.page) {
-  //       //     const test = responce.data.hits.map(item => item) ///
-  //       // //   // console.log(prevState.storage)
-  //       // //   // console.log(responce.data.hits)
-
-  //       //   return {
-  //       //     responce: responce.data.hits,
-  //       //     storage: [...prevState.storage, ...test]
-  //       //   }
-  //       //   }
-
-  //       //   if ()
-  //       // })
-  //       .catch(error => this.setState({ error }))
-  //   }
-
-  // }
-
-
-
-
-  async componentDidUpdate(prevProps, prevState) {
-    if (prevState.input !== this.state.input & prevState.page === this.state.page) {
-      const jdi = await this.setState({ page: 1 })
-      ImageApi.fetchImages(this.state.input, this.state.page)
-        .then(responce => this.setState((prevState) => {
-          // const test = responce.data.hits.map(item => item)
-          return {
-            // page: 1,
-            responce: responce.data.hits,
-            storage: [...responce.data.hits]
-          }
-        }))
-    }
-
-    if (prevState.input === this.state.input & prevState.page !== this.state.page) {
-      ImageApi.fetchImages(this.state.input, this.state.page)
-        .then(responce => this.setState((prevState) => {
-          const test = responce.data.hits.map(item => item)
-          return {
-            responce: responce.data.hits,
-            storage: [...prevState.storage, ...test]
-          }
-        }))
+    storage: null,
+    loading: false,
+    openModal: false,
+    modalContent: {
+      largeImageURL: '',
+      tags: ''
     }
   }
 
-
-
-
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.input !== this.state.input || prevState.page !== this.state.page) {
+      this.setState({ loading: true })
+      ImageApi.fetchImages(this.state.input, this.state.page)
+        .then(responce => this.setState((prevState) => {
+          console.log(responce)
+          return {
+            responce: [...prevState.responce, ...responce.data.hits],
+            storage: responce.data
+          }
+        })).catch(error => this.setState({ error })).finally(result => this.setState({ loading: false }))
+    }
+  }
 
   handleFormSubmit = (inputValue) => {
-    this.setState({ input: inputValue })
+    this.setState({
+      page: 1,
+      input: inputValue,
+      responce: []
+    })
   }
 
-  // handleBtnClick = () => {
-  //   this.setState({
-  //     page: this.state.page + 1,
-  //   })
-  // }
-
   handleBtnClick = () => {
+    console.log(this.state.storage?.totalHits)
+    console.log(this.state.responce?.length)
     this.setState({
       page: this.state.page + 1,
     })
 
-    // ImageApi.fetchImages(this.state.input, this.state.page).then(responce => this.setState((prevState) => {
-    //   return {
-    //     responce: [...prevState.responce + responce]
-    //   }
-    // }))
   }
 
-  // handleBtnClick = () => {
-  //   this.setState((prevState) => {
-  //     const newImagesList = {
-  //       ...this.state.responce
-  //     };
-  //     console.log(prevState.responce)
-  //     console.log(this.state.responce)
-  //     return {
-  //       page: this.state.page + 1,
-  //       responce: [...prevState.responce, newImagesList]
-  //     }
-  //   })
-  // }
+  onClick = (modalContent) => {
+    console.log(this.state.modalContent.largeImageURL)
+    this.setState({
+      openModal: true,
+      modalContent
+    })
+  }
+
+  onClose = () => {
+    this.setState({
+      openModal: false,
+      modalContent: {
+        largeImageURL: '',
+        tags: ''
+      }
+    })
+  }
 
   render() {
     return (
-      <div>
+      <div className='App'>
+        {this.state.openModal && <Modal modalClose={this.onClose}>
+          <img src={this.state.modalContent.largeImageURL} alt={this.state.modalContent.tags} />
+        </Modal>}
         <Searchbar onSubmit={this.handleFormSubmit} />
+        <Loader visible={this.state.loading} />
         <ImageGallery>
-          {this.state.responce && <ImageGalleryItem items={this.state.storage} />}
-          {this.state.responce && this.state.responce.length === 0 && <li>Sorry, no one images found :(</li>}
-          <Button onClick={this.handleBtnClick} />
+          {/* <Loader visible={this.state.loading} /> */}
+          {/* {this.state.responce?.length === 0 && <li>Sorry, no one images found :(</li>} */}
+          {this.state.responce && <ImageGalleryItem items={this.state.responce} openModal={this.onClick} />}
         </ImageGallery>
+        {this.state.responce?.length > 0 && this.state.storage?.totalHits > this.state.responce?.length && <Button onClick={this.handleBtnClick} />}
       </div>
     )
   }

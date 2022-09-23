@@ -1,12 +1,12 @@
 import React from 'react'
 
-export default function ImageGalleryItem({ items }) {
+export default function ImageGalleryItem({ items, openModal }) {
     return (
         <>
-            {items.map(({ id, webformatURL, tags }) => {
+            {items.map(({ id, webformatURL, tags, largeImageURL }) => {
                 return (
-                    <li key={id}>
-                        <img src={webformatURL} alt={tags} width='200' />
+                    <li className='ImageGalleryItem' key={id} onClick={() => openModal({ largeImageURL, tags })}>
+                        <img className='ImageGalleryItem-image' src={webformatURL} alt={tags} width='200' />
                     </li>
                 )
             })}
