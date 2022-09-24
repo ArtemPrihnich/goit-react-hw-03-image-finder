@@ -5,9 +5,9 @@ import '../../styles.css'
 export default function Loader({ visible }) {
     return (
         <Rings
-            height="80"
-            width="80"
-            color="#4fa94d"
+            height="200"
+            width="200"
+            color="#27e435"
             radius="6"
             wrapperStyle={{}}
             wrapperClass="Loader-style"

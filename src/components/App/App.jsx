@@ -8,6 +8,7 @@ import Button from 'components/Button/Button'
 import Loader from 'components/Loader/Loader'
 import Modal from 'components/Modal/Modal'
 import '../../styles.css'
+import Alert from 'components/Notify/Alert'
 
 export default class App extends Component {
   state = {
@@ -16,6 +17,7 @@ export default class App extends Component {
     responce: null,
     storage: null,
     loading: false,
+    error: null,
     openModal: false,
     modalContent: {
       largeImageURL: '',
@@ -23,21 +25,29 @@ export default class App extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.input !== this.state.input || prevState.page !== this.state.page) {
+  async componentDidUpdate(prevProps, prevState) {
+    const { input, page } = this.state
+    if (prevState.input !== input || prevState.page !== page) {
       this.setState({ loading: true })
-      ImageApi.fetchImages(this.state.input, this.state.page)
-        .then(responce => this.setState((prevState) => {
-          console.log(responce)
+      try {
+        const responci = await ImageApi.fetchImages(input, page)
+        return this.setState((prevState) => {
           return {
-            responce: [...prevState.responce, ...responce.data.hits],
-            storage: responce.data
+            responce: [...prevState.responce, ...responci?.data.hits],
+            storage: responci?.data
           }
-        })).catch(error => this.setState({ error })).finally(result => this.setState({ loading: false }))
+        })
+      } catch (error) {
+        return this.setState({ error })
+      } finally { this.setState({ loading: false }) }
     }
   }
 
   handleFormSubmit = (inputValue) => {
+    const { input } = this.state
+    if (inputValue === input) {
+      return
+    }
     this.setState({
       page: 1,
       input: inputValue,
@@ -46,16 +56,14 @@ export default class App extends Component {
   }
 
   handleBtnClick = () => {
-    console.log(this.state.storage?.totalHits)
-    console.log(this.state.responce?.length)
+    const { page } = this.state
     this.setState({
-      page: this.state.page + 1,
+      page: page + 1,
     })
 
   }
 
-  onClick = (modalContent) => {
-    console.log(this.state.modalContent.largeImageURL)
+  onOpen = (modalContent) => {
     this.setState({
       openModal: true,
       modalContent
@@ -73,19 +81,22 @@ export default class App extends Component {
   }
 
   render() {
+    const { openModal, modalContent, loading, error, responce, storage } = this.state
+    const { onClose, handleFormSubmit, onOpen, handleBtnClick } = this
     return (
       <div className='App'>
-        {this.state.openModal && <Modal modalClose={this.onClose}>
-          <img src={this.state.modalContent.largeImageURL} alt={this.state.modalContent.tags} />
+        {openModal && <Modal modalClose={onClose}>
+          <img src={modalContent.largeImageURL} alt={modalContent.tags} />
         </Modal>}
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        <Loader visible={this.state.loading} />
+        <Searchbar onSubmit={handleFormSubmit} />
+        <Loader visible={loading} />
         <ImageGallery>
-          {/* <Loader visible={this.state.loading} /> */}
-          {/* {this.state.responce?.length === 0 && <li>Sorry, no one images found :(</li>} */}
-          {this.state.responce && <ImageGalleryItem items={this.state.responce} openModal={this.onClick} />}
+          {error && <li>{error.message}</li>}
+          {responce && <ImageGalleryItem items={responce} openModal={onOpen} />}
         </ImageGallery>
-        {this.state.responce?.length > 0 && this.state.storage?.totalHits > this.state.responce?.length && <Button onClick={this.handleBtnClick} />}
+        {/* {responce?.length === 0 && !loading && <Alert />} */}
+        {responce?.length > 0 && storage?.totalHits > responce?.length && <Button onClick={handleBtnClick} />}
+        {responce?.length === 0 && !loading && <Alert />}
       </div>
     )
   }

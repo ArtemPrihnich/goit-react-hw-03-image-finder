@@ -211,6 +211,23 @@ img {
 }
 
 .Loader-style {
-  display: flex;
+  position: fixed;
   justify-content: center;
+  align-items: center;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.Alert {
+  display: block;
+  margin: 25% auto;
+}
+
+.Alert-text {
+  width: 500px;
+  font-weight: 500;
+  font-size: 28px;
+  text-align: center;
 }

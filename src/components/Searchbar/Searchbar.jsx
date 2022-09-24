@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import '../../styles.css'
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 export default class Searchbar extends Component {
     state = {
@@ -16,7 +17,7 @@ export default class Searchbar extends Component {
         e.preventDefault();
 
         if (input.trim() === '') {
-            return alert('AAAA')
+            return Notify.failure('Fill in the input field', { timeout: 1500, clickToClose: true });
         }
 
         this.props.onSubmit(input)
@@ -26,9 +27,11 @@ export default class Searchbar extends Component {
     }
 
     render() {
+        const { handleSubmit, handleChange } = this
+        const { input } = this.state
         return (
             <header className="Searchbar">
-                <form className='SeacrhForm' onSubmit={this.handleSubmit}>
+                <form className='SeacrhForm' onSubmit={handleSubmit}>
                     <button type="submit" className="SearchForm-button">
                         <span className="SearchForm-button-label">Search</span>
                     </button>
@@ -40,8 +43,8 @@ export default class Searchbar extends Component {
                         autoComplete="off"
                         autoFocus
                         placeholder="Search images and photos"
-                        value={this.state.input}
-                        onChange={this.handleChange}
+                        value={input}
+                        onChange={handleChange}
                     />
                 </form>
             </header>
