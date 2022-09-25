@@ -3,7 +3,6 @@ import React, { Component } from 'react'
 import ImageApi from '../../services/imageSearch'
 import Searchbar from 'components/Searchbar/Searchbar'
 import ImageGallery from 'components/ImageGallery/ImageGallery'
-import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem'
 import Button from 'components/Button/Button'
 import Loader from 'components/Loader/Loader'
 import Modal from 'components/Modal/Modal'
@@ -90,13 +89,10 @@ export default class App extends Component {
         </Modal>}
         <Searchbar onSubmit={handleFormSubmit} />
         <Loader visible={loading} />
-        <ImageGallery>
-          {error && <li>{error.message}</li>}
-          {responce && <ImageGalleryItem items={responce} openModal={onOpen} />}
-        </ImageGallery>
-        {/* {responce?.length === 0 && !loading && <Alert />} */}
+        {responce && <ImageGallery items={responce} openModal={onOpen} onError={error}>
+        </ImageGallery>}
         {responce?.length > 0 && storage?.totalHits > responce?.length && <Button onClick={handleBtnClick} />}
-        {responce?.length === 0 && !loading && <Alert />}
+        {responce?.length === 0 && !loading && !error && <Alert />}
       </div>
     )
   }

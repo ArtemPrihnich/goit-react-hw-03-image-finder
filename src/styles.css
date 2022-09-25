@@ -231,3 +231,10 @@ img {
   font-size: 28px;
   text-align: center;
 }
+
+.Error-mesage {
+  width: 500px;
+  font-weight: 500;
+  font-size: 28px;
+  text-align: center;
+}

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Rings } from 'react-loader-spinner'
 import '../../styles.css'
+import PropTypes from 'prop-types'
 
 export default function Loader({ visible }) {
     return (
@@ -15,4 +16,8 @@ export default function Loader({ visible }) {
             ariaLabel="rings-loading"
         />
     )
+}
+
+Loader.propTypes = {
+    visible: PropTypes.bool.isRequired
 }

@@ -1,10 +1,26 @@
 import React from 'react'
 import '../../styles.css'
+import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem'
+import PropTypes from 'prop-types'
 
-export default function ImageGallery({ children }) {
+export default function ImageGallery({ items, openModal, onError }) {
     return (
         <ul className="ImageGallery">
-            {children}
+            {onError && <li className='Error-mesage' key={onError.message}>{onError.message}</li>}
+            {items.map(({ id, webformatURL, tags, largeImageURL }) => {
+                return (
+                    <ImageGalleryItem key={id} data={({ id, webformatURL, tags, largeImageURL })} openModal={openModal} />
+                )
+            })}
         </ul>
     )
+}
+
+ImageGallery.propTypes = {
+    items: PropTypes.arrayOf(
+        PropTypes.object.isRequired
+    ),
+    openModal: PropTypes.func.isRequired,
+    onError: PropTypes.object
+
 }

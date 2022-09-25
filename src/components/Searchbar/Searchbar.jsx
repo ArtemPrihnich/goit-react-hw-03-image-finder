@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import '../../styles.css'
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import PropTypes from 'prop-types'
 
 export default class Searchbar extends Component {
     state = {
@@ -21,9 +22,6 @@ export default class Searchbar extends Component {
         }
 
         this.props.onSubmit(input)
-        this.setState({
-            input: ''
-        })
     }
 
     render() {
@@ -50,4 +48,8 @@ export default class Searchbar extends Component {
             </header>
         )
     }
+}
+
+Searchbar.propTypes = {
+    onSubmit: PropTypes.func.isRequired
 }

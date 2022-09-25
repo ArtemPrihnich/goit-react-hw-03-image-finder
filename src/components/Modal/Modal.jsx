@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import { createPortal } from 'react-dom'
 import '../../styles.css'
+import PropTypes from 'prop-types'
 
 const modalRoot = document.getElementById("modal-root")
 
@@ -30,4 +31,8 @@ export default class Modal extends Component {
             modalRoot
         )
     }
+}
+
+Modal.propTypes = {
+    modalClose: PropTypes.func.isRequired
 }
