@@ -18,9 +18,15 @@ export default function ImageGallery({ items, openModal, onError }) {
 
 ImageGallery.propTypes = {
     items: PropTypes.arrayOf(
-        PropTypes.object.isRequired
+        PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            webformatURL: PropTypes.string.isRequired,
+            tags: PropTypes.string.isRequired,
+            largeImageURL: PropTypes.string.isRequired,
+        })
     ),
     openModal: PropTypes.func.isRequired,
-    onError: PropTypes.object
+    onError: PropTypes.object,
+
 
 }
